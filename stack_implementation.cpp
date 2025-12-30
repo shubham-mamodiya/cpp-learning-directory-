@@ -55,26 +55,46 @@ public:
 
   bool is_empty() const { return m_top == 0; }
 
-  auto size() const { return m_capacity; }
+  auto size() const { return m_top; }
+  auto capacity() const { return m_capacity; }
+  void reverse() {
+    std::string *new_stack = new std::string[m_capacity];
+    for (std::size_t i{}; i < m_top; ++i) {
+      new_stack[i] = std::move(m_stack[m_top - 1 - i]);
+    }
+    delete[] m_stack;
+    m_stack = new_stack;
+  }
 };
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   ArrayStack words;
-  std::string input{};
-  int count{1};
-  std::cout << "Enter ('-' to pop, '=' for size) \n";
-  while (true) {
-    std::cout << "\nEnter a word " << count << ": ";
-    std::cin >> input;
-    if (input == "-") {
-      std::cout << "\n Popped Item: " << words.pop() << "\n";
-      --count;
-    } else if (input == "=") {
-      std::cout << "\n Size: " << words.size() << "\n";
+  std::string input{' '};
+  std::string temp_word{};
+  char white_space = ' ';
+
+  std::cout << "Enter text ('-' to pop) \n";
+  std::getline(std::cin >> std::ws, input);
+  for (char c : input) {
+    if (c == '-') {
+      if (!words.is_empty()) {
+        words.pop();
+      }
+    } else if (c == white_space) {
+      if (!temp_word.empty()) {
+        words.push(temp_word);
+        temp_word.clear();
+      }
     } else {
-      words.push(input);
-      ++count;
+      temp_word += c;
     }
+  }
+  if (!temp_word.empty()) {
+    words.push(temp_word);
+  }
+  words.reverse();
+  while (!words.is_empty()) {
+    std::cout << words.pop() << '\n';
   }
   return 0;
 }
