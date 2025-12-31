@@ -16,7 +16,7 @@ class ArrayStack {
 private:
   std::size_t m_capacity{16}; // why 16? Because 16 times 2 or divided by 2 is
                               // always even. But odd is also fine
-  std::string *m_stack = new std::string[m_capacity]{};
+  std::string *m_stack{new std::string[m_capacity]{}};
   std::size_t m_top{};
 
   void resize(size_t m_new_capacity) {
@@ -32,13 +32,39 @@ private:
   }
 
 public:
+  ArrayStack() = default;
+
   ~ArrayStack() { delete[] m_stack; }
 
-  void push(std::string_view item) {
+  // Deep copy constructor
+  ArrayStack(const ArrayStack &other)
+      : m_capacity{other.m_capacity}, m_top{other.m_top},
+        m_stack{new std::string[other.m_capacity]{}} {
+    for (std::size_t index = 0; index < m_capacity; ++index) {
+      m_stack[index] = other.m_stack[index];
+    }
+  }
+
+  // deep copy Assignment
+  ArrayStack &operator=(const ArrayStack &other) {
+    if (this != &other) {
+      delete[] m_stack;
+
+      m_capacity = other.m_capacity;
+      m_top = other.m_top;
+      m_stack = new std::string[m_capacity]{};
+
+      for (std::size_t index{}; index < m_capacity; ++index) {
+        m_stack[index] = other.m_stack[index];
+      }
+    }
+    return *this;
+  }
+  void push(std::string item) {
     if (m_top >= m_capacity) {
       resize(m_capacity * 2);
     }
-    m_stack[m_top++] = item;
+    m_stack[m_top++] = std::move(item);
   }
 
   std::string pop() {
@@ -46,7 +72,7 @@ public:
       throw std::runtime_error("Stack is empty!");
     }
 
-    if (m_top > 0 && m_top <= (m_capacity / 2)) {
+    if (m_top > 0 && m_top <= (m_capacity / 4)) {
       resize(m_capacity / 2);
     }
     return std::move(
@@ -58,12 +84,15 @@ public:
   auto size() const { return m_top; }
   auto capacity() const { return m_capacity; }
   void reverse() {
-    std::string *new_stack = new std::string[m_capacity];
     for (std::size_t i{}; i < m_top; ++i) {
-      new_stack[i] = std::move(m_stack[m_top - 1 - i]);
+      std::swap(m_stack[i], m_stack[m_top - 1 - i]);
     }
-    delete[] m_stack;
-    m_stack = new_stack;
+  }
+
+  void print() const {
+    for (std::size_t i{}; i < m_top; ++i) {
+      std::cout << m_stack[i] << " ";
+    }
   }
 };
 
