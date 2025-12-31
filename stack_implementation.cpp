@@ -14,13 +14,23 @@
  */
 class ArrayStack {
 private:
-  std::size_t m_capacity{16}; // why 16? Because 16 times 2 or divided by 2 is
-                              // always even. But odd is also fine
+  /*
+   * locations on this stack that are not used is a Empty string.
+   * It does not free those locations.
+   * */
+
+  // why capacity is 16? Because 16 times 2 or divided by 2 is always even.
+  // But odd is also fine
+  std::size_t m_capacity{16};
+
+  // pointer to dynamic array of strings
   std::string *m_stack{new std::string[m_capacity]{}};
+
+  // Index for the latest added string
   std::size_t m_top{};
 
   void resize(size_t m_new_capacity) {
-    std::string *m_new_stack = new std::string[m_new_capacity];
+    std::string *m_new_stack = new std::string[m_new_capacity]{};
 
     for (std::size_t index = 0; index < m_top; ++index) {
       m_new_stack[index] = std::move(m_stack[index]);
@@ -32,11 +42,16 @@ private:
   }
 
 public:
+  // data is managed by user so a Naturally empty stack
   ArrayStack() = default;
 
   ~ArrayStack() { delete[] m_stack; }
 
-  // Deep copy constructor
+  /*
+   * Deep copy constructor.
+   * called when:
+   * ArrayStack stack {some other stack}
+   * */
   ArrayStack(const ArrayStack &other)
       : m_capacity{other.m_capacity}, m_top{other.m_top},
         m_stack{new std::string[other.m_capacity]{}} {
@@ -45,7 +60,12 @@ public:
     }
   }
 
-  // deep copy Assignment
+  /*
+   * Deep copy assignment.
+   * Called when:
+   * ArrayStack a;
+   * a = some other ArrayStack b;
+   * */
   ArrayStack &operator=(const ArrayStack &other) {
     if (this != &other) {
       delete[] m_stack;
@@ -57,6 +77,40 @@ public:
       for (std::size_t index{}; index < m_capacity; ++index) {
         m_stack[index] = other.m_stack[index];
       }
+    }
+    return *this;
+  }
+
+  /*
+   * Deep move constructor for std::move()
+   * Called when:
+   * ArrayStack a = std::move(some ArrayStack b)
+   * */
+  ArrayStack(ArrayStack &&other) noexcept
+      : m_capacity{other.m_capacity}, m_top{other.m_top},
+        m_stack{other.m_stack} {
+    other.m_stack = nullptr;
+    other.m_top = 0;
+    other.m_capacity = 0;
+  }
+
+  /*
+   * Deep move assignment.
+   * Called when:
+   * ArrayStack a;
+   * a = std::move(some ArrayStack b)
+   * */
+  ArrayStack &operator=(ArrayStack &&other) noexcept {
+    if (this != &other) {
+      delete[] m_stack;
+
+      m_stack = other.m_stack;
+      m_capacity = other.m_capacity;
+      m_top = other.m_top;
+
+      other.m_stack = nullptr;
+      other.m_top = 0;
+      other.m_capacity = 0;
     }
     return *this;
   }
