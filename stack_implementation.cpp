@@ -53,8 +53,8 @@ public:
    * ArrayStack stack {some other stack}
    * */
   ArrayStack(const ArrayStack &other)
-      : m_capacity{other.m_capacity}, m_top{other.m_top},
-        m_stack{new std::string[other.m_capacity]{}} {
+      : m_capacity{other.m_capacity},
+        m_stack{new std::string[other.m_capacity]{}}, m_top{other.m_top} {
     for (std::size_t index = 0; index < m_capacity; ++index) {
       m_stack[index] = other.m_stack[index];
     }
@@ -87,8 +87,8 @@ public:
    * ArrayStack a = std::move(some ArrayStack b)
    * */
   ArrayStack(ArrayStack &&other) noexcept
-      : m_capacity{other.m_capacity}, m_top{other.m_top},
-        m_stack{other.m_stack} {
+      : m_capacity{other.m_capacity}, m_stack{other.m_stack},
+        m_top{other.m_top} {
     other.m_stack = nullptr;
     other.m_top = 0;
     other.m_capacity = 0;
@@ -114,6 +114,7 @@ public:
     }
     return *this;
   }
+
   void push(std::string item) {
     if (m_top >= m_capacity) {
       resize(m_capacity * 2);
@@ -126,17 +127,22 @@ public:
       throw std::runtime_error("Stack is empty!");
     }
 
+    // because top is a count of elements not index and starts from 1 not 0.
+    std::string value = std::move(m_stack[--m_top]);
+
+    // shrink to half when stack is a quarter full
     if (m_top > 0 && m_top <= (m_capacity / 4)) {
       resize(m_capacity / 2);
     }
-    return std::move(
-        m_stack[--m_top]); // because top is a count of elements not index
+
+    return value;
   }
 
   bool is_empty() const { return m_top == 0; }
 
   auto size() const { return m_top; }
   auto capacity() const { return m_capacity; }
+
   void reverse() {
     for (std::size_t i{}; i < m_top; ++i) {
       std::swap(m_stack[i], m_stack[m_top - 1 - i]);
@@ -150,9 +156,13 @@ public:
   }
 };
 
+/*
+ * Asks for a line to the user then pushes words to the stack
+ * pops when '-' is given
+ * */
 int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   ArrayStack words;
-  std::string input{' '};
+  std::string input{};
   std::string temp_word{};
   char white_space = ' ';
 
@@ -161,6 +171,10 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   for (char c : input) {
     if (c == '-') {
       if (!words.is_empty()) {
+        if (!temp_word.empty()) {
+          words.push(temp_word);
+          temp_word.clear();
+        }
         words.pop();
       }
     } else if (c == white_space) {
@@ -176,8 +190,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
     words.push(temp_word);
   }
   words.reverse();
-  while (!words.is_empty()) {
-    std::cout << words.pop() << '\n';
-  }
+
+  words.print();
   return 0;
 }
