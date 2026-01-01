@@ -156,6 +156,17 @@ public:
   }
 };
 
+// Linked list implementation for stack
+typedef struct Node {
+  std::string item{};
+  Node *next = nullptr;
+
+  Node(const std::string &word, Node *next_node) : item{word}, next{next_node} {
+    // Nothing in constructor body
+    //
+  }
+} Node_t;
+
 /*
  * Asks for a line to the user then pushes words to the stack
  * pops when '-' is given
