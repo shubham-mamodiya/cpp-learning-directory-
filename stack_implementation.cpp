@@ -169,7 +169,8 @@ typedef struct Node {
 
 class Linked_stack {
 private:
-  Node_t *top{nullptr};
+  Node_t *m_top{nullptr};
+  std::size_t length{};
 
 public:
   Linked_stack() = default;
@@ -178,11 +179,43 @@ public:
   Linked_stack(Linked_stack &&) noexcept = delete;
   Linked_stack &operator=(Linked_stack &&) = delete;
 
-  bool is_empty() const { return top == nullptr; }
+  bool is_empty() const { return m_top == nullptr; }
 
   void push(std::string word) {
-    Node_t *new_node = new Node_t{word, top};
-    top = new_node;
+    Node_t *new_node = new Node_t{word, m_top};
+    m_top = new_node;
+    ++length;
+  }
+
+  std::string pop() {
+    if (is_empty()) {
+      throw std::runtime_error("Stack is empty!");
+    }
+    Node_t *temp_node = m_top;
+    std::string item = m_top->item;
+    m_top = m_top->next;
+    delete temp_node;
+    --length;
+    return item;
+  }
+
+  std::size_t total_length() const { return length; }
+
+  void print() const {
+    Node_t *current = m_top;
+    char white_space = ' ';
+    while (current != nullptr) {
+      std::cout << current->item << white_space;
+      current = current->next;
+    }
+  }
+
+  void reverse() noexcept {};
+
+  ~Linked_stack() noexcept {
+    while (!is_empty()) {
+      pop();
+    }
   }
 };
 /*
@@ -190,7 +223,8 @@ public:
  * pops when '-' is given
  * */
 int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
-  ArrayStack words;
+  // ArrayStack words; // uncomment this to use ArrayStack
+  Linked_stack words; // comment this when using ArrayStack
   std::string input{};
   std::string temp_word{};
   char white_space = ' ';
