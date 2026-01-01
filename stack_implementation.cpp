@@ -174,6 +174,8 @@ private:
 
 public:
   Linked_stack() = default;
+
+  // TODO: make deep copy for each
   Linked_stack(const Linked_stack &) = delete;
   Linked_stack &operator=(const Linked_stack &) = delete;
   Linked_stack(Linked_stack &&) noexcept = delete;
@@ -210,6 +212,7 @@ public:
     }
   }
 
+  // TODO: Implement reverse method for Linked_stack
   void reverse() noexcept {};
 
   ~Linked_stack() noexcept {
