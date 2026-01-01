@@ -167,6 +167,24 @@ typedef struct Node {
   }
 } Node_t;
 
+class Linked_stack {
+private:
+  Node_t *top{nullptr};
+
+public:
+  Linked_stack() = default;
+  Linked_stack(const Linked_stack &) = delete;
+  Linked_stack &operator=(const Linked_stack &) = delete;
+  Linked_stack(Linked_stack &&) noexcept = delete;
+  Linked_stack &operator=(Linked_stack &&) = delete;
+
+  bool is_empty() const { return top == nullptr; }
+
+  void push(std::string word) {
+    Node_t *new_node = new Node_t{word, top};
+    top = new_node;
+  }
+};
 /*
  * Asks for a line to the user then pushes words to the stack
  * pops when '-' is given
