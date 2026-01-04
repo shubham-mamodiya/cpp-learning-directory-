@@ -13,7 +13,7 @@
 template <typename T> class Deque {
 private:
   struct Node_t {
-    // initialized to
+    // initialized to nothing by default
     T data{};
     Node_t *next = nullptr;
     Node_t *prev = nullptr;
@@ -21,11 +21,14 @@ private:
     Node_t() = default;
     Node_t(T value) : data{value} {}
 
-    // this cosntructor is redundant
+    // this constructor is redundant
     Node_t(T value, Node_t *input_next, Node_t *input_prev)
         : data{value}, next{input_next}, prev{input_prev} {}
   };
 
+  /* Both are pointing to nullptr by default
+   * and this is the state they should be when size is 0.
+   * */
   Node_t *m_head{};
   Node_t *m_tail{};
   std::size_t m_size{};
@@ -122,7 +125,8 @@ public:
     return m_tail->data;
   }
 
-  void print() {
+  void print_forward() {
+
     Node_t *current = m_head;
 
     while (current) {
@@ -130,6 +134,15 @@ public:
       current = current->next;
     }
 
+    std::cout << std::endl;
+  }
+
+  void print_backwards() {
+    Node_t *current = m_tail;
+    while (current) {
+      std::cout << current->data << " ";
+      current = current->prev;
+    }
     std::cout << std::endl;
   }
 };
