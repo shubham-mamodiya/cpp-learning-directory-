@@ -33,10 +33,36 @@ public:
 
   // TODO: move semantics
 
-  bool empty() const { return m_size == 0; }
+  bool is_empty() const { return m_size == 0; }
   auto length() const { return m_size; }
 
-  void push_front(T item) { Node *new_node = new Node{item}; }
+  void push_front(T item) {
+    Node *new_node = new Node{item};
+
+    if (is_empty()) {
+      m_head = m_tail = new_node;
+    } else {
+      new_node->next = m_head;
+
+      m_head->prev = new_node;
+      m_head = new_node;
+    }
+    ++m_size;
+  }
+
+  void push_back(T item) {
+    Node *new_node = new Node{item};
+
+    if (is_empty()) {
+      m_head = m_tail = new_node;
+    } else {
+      new_node->prev = m_tail;
+
+      m_tail->next = new_node;
+      m_tail = new_node;
+    }
+    ++m_size;
+  }
 };
 
 /*deque psudocode
