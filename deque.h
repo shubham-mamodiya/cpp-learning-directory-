@@ -11,157 +11,144 @@
 
 // generic Double ended queue object
 template <typename T> class Deque {
-private:
-  struct Node_t {
-    // initialized to nothing by default
-    T data{};
-    Node_t *next = nullptr;
-    Node_t *prev = nullptr;
+  private:
+    struct Node_t {
+        // initialized to nothing by default
+        T data{};
+        Node_t* next = nullptr;
+        Node_t* prev = nullptr;
 
-    Node_t() = default;
-    Node_t(T value) : data{value} {}
+        Node_t() = default;
+        Node_t(T value) : data{value} {}
 
-    // this constructor is redundant
-    Node_t(T value, Node_t *input_next, Node_t *input_prev)
-        : data{value}, next{input_next}, prev{input_prev} {}
-  };
+        // this constructor is redundant
+        Node_t(T value, Node_t* input_next, Node_t* input_prev)
+            : data{value}, next{input_next}, prev{input_prev} {}
+    };
 
-  /* Both are pointing to nullptr by default
-   * and this is the state they should be when size is 0.
-   * */
-  Node_t *m_head{};
-  Node_t *m_tail{};
-  std::size_t m_size{};
+    /* Both are pointing to nullptr by default
+     * and this is the state they should be when size is 0.
+     * */
+    Node_t* m_head{};
+    Node_t* m_tail{};
+    std::size_t m_size{};
 
-public:
-  // because our node initializes everything itself we are not putting
-  // anything in class default constructor
-  Deque() = default;
+  public:
+    // because our node initializes everything itself we are not putting
+    // anything in class default constructor
+    Deque() = default;
 
-  ~Deque() {
-    while (m_head) {
-      pop_front();
-    }
-  }
-
-  // TODO: move semantics
-
-  bool is_empty() const { return m_size == 0; }
-  auto get_size() const { return m_size; }
-
-  void push_front(T item) {
-    Node_t *new_node = new Node_t{item};
-
-    if (is_empty()) {
-
-      m_head = m_tail = new_node;
-    } else {
-      new_node->next = m_head;
-      m_head->prev = new_node;
-      m_head = new_node;
-    }
-    ++m_size;
-  }
-
-  void push_back(T item) {
-    Node_t *new_node = new Node_t{item};
-
-    if (is_empty()) {
-      m_head = m_tail = new_node;
-    } else {
-      new_node->prev = m_tail;
-
-      m_tail->next = new_node;
-      m_tail = new_node;
-    }
-    ++m_size;
-  }
-
-  void pop_front() {
-    if (is_empty()) {
-      throw std::runtime_error("Deque Container is already empty!");
+    ~Deque() {
+        while (m_head) {
+            pop_front();
+        }
     }
 
-    Node_t *temp_node = m_head;
-    m_head = m_head->next;
-    if (m_head) {
-      m_head->prev = nullptr;
-    } else {
-      m_tail = nullptr; // deque container is empty
-    }
-    delete temp_node;
-    --m_size;
-  }
+    // TODO: move semantics
 
-  void pop_back() {
-    if (is_empty()) {
-      throw std::runtime_error("Deque container is already empty!");
+    bool is_empty() const {
+        return m_size == 0;
+    }
+    auto get_size() const {
+        return m_size;
     }
 
-    Node_t *temp_node = m_tail;
-    m_tail = m_tail->prev;
-    if (m_tail) {
-      m_tail->next = nullptr;
-    } else {
-      m_head = nullptr; // deque container is empty
+    void push_front(T item) {
+        Node_t* new_node = new Node_t{item};
+
+        if (is_empty()) {
+
+            m_head = m_tail = new_node;
+        } else {
+            new_node->next = m_head;
+            m_head->prev = new_node;
+            m_head = new_node;
+        }
+        ++m_size;
     }
 
-    delete temp_node;
-    --m_size;
-  }
+    void push_back(T item) {
+        Node_t* new_node = new Node_t{item};
 
-  T get_front() {
-    if (is_empty()) {
-      throw std::runtime_error("Deque container is already empty!");
-    }
-    return m_head->data;
-  }
+        if (is_empty()) {
+            m_head = m_tail = new_node;
+        } else {
+            new_node->prev = m_tail;
 
-  T get_back() {
-    if (is_empty()) {
-      throw std::runtime_error("Deque container is already empty!");
+            m_tail->next = new_node;
+            m_tail = new_node;
+        }
+        ++m_size;
     }
 
-    return m_tail->data;
-  }
+    void pop_front() {
+        if (is_empty()) {
+            throw std::runtime_error("Deque Container is already empty!");
+        }
 
-  void print_forward() {
-
-    Node_t *current = m_head;
-
-    while (current) {
-      std::cout << current->data << " ";
-      current = current->next;
+        Node_t* temp_node = m_head;
+        m_head = m_head->next;
+        if (m_head) {
+            m_head->prev = nullptr;
+        } else {
+            m_tail = nullptr; // deque container is empty
+        }
+        delete temp_node;
+        --m_size;
     }
 
-    std::cout << std::endl;
-  }
+    void pop_back() {
+        if (is_empty()) {
+            throw std::runtime_error("Deque container is already empty!");
+        }
 
-  void print_backwards() {
-    Node_t *current = m_tail;
-    while (current) {
-      std::cout << current->data << " ";
-      current = current->prev;
+        Node_t* temp_node = m_tail;
+        m_tail = m_tail->prev;
+        if (m_tail) {
+            m_tail->next = nullptr;
+        } else {
+            m_head = nullptr; // deque container is empty
+        }
+
+        delete temp_node;
+        --m_size;
     }
-    std::cout << std::endl;
-  }
+
+    T get_front() {
+        if (is_empty()) {
+            throw std::runtime_error("Deque container is already empty!");
+        }
+        return m_head->data;
+    }
+
+    T get_back() {
+        if (is_empty()) {
+            throw std::runtime_error("Deque container is already empty!");
+        }
+
+        return m_tail->data;
+    }
+
+    void print_forward() {
+
+        Node_t* current = m_head;
+
+        while (current) {
+            std::cout << current->data << " ";
+            current = current->next;
+        }
+
+        std::cout << std::endl;
+    }
+
+    void print_backwards() {
+        Node_t* current = m_tail;
+        while (current) {
+            std::cout << current->data << " ";
+            current = current->prev;
+        }
+        std::cout << std::endl;
+    }
 };
 
-/*deque psudocode
- * use template
- * create Deque class
- * define constructor
- * and distructor
- * copy & move semantics
- * implement empty method that returns boolean that is container is empty or not
- * implement size function
- *
- * Modifiers push_front and push_back
- * return type T pop_front and pop_back
- *
- * iterator support
- * class iterator
- * iterato begin()
- * iterator end()
- */
 #endif // DEQUE_H
