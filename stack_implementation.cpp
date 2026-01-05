@@ -4,6 +4,7 @@
 #include <string>
 #include <string_view>
 
+
 /* Stack API
  * Warm-up API. Stack of strings data type.
  * Stack Of Strings , Create an empty stack
@@ -68,6 +69,7 @@ public:
    * */
   ArrayStack &operator=(const ArrayStack &other) {
     if (this != &other) {
+
       delete[] m_stack;
 
       m_capacity = other.m_capacity;
@@ -79,6 +81,7 @@ public:
       }
     }
     return *this;
+
   }
 
   /*
@@ -231,6 +234,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   std::string input{};
   std::string temp_word{};
   char white_space = ' ';
+
 
   std::cout << "Enter text ('-' to pop) \n";
   std::getline(std::cin >> std::ws, input);
