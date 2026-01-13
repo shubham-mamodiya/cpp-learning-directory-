@@ -9,7 +9,7 @@
  * Warm-up API. Stack of strings data type.
  * Stack Of Strings , Create an empty stack
  * void push(String item), insert a new element onto the stack
- * String pop(), remove and return the string most recently added
+ * String pop(), remove and return the string most recently adde
  * bool is Empty(), is stack empty
  * int size, number of strings on the stack
  */
