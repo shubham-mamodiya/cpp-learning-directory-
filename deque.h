@@ -54,7 +54,7 @@ template <typename T> class Deque {
     }
 
     void push_front(T item) {
-        Node_t* new_node = new Node_t{item};
+        auto* new_node = new Node_t{item};
 
         if (is_empty()) {
 
@@ -68,7 +68,7 @@ template <typename T> class Deque {
     }
 
     void push_back(T item) {
-        Node_t* new_node = new Node_t{item};
+        auto* new_node = new Node_t{item};
 
         if (is_empty()) {
             m_head = m_tail = new_node;
@@ -114,14 +114,14 @@ template <typename T> class Deque {
         --m_size;
     }
 
-    T get_front() {
+    auto get_front() -> T {
         if (is_empty()) {
             throw std::runtime_error("Deque container is already empty!");
         }
         return m_head->data;
     }
 
-    T get_back() {
+    auto get_back() -> T {
         if (is_empty()) {
             throw std::runtime_error("Deque container is already empty!");
         }
@@ -129,6 +129,8 @@ template <typename T> class Deque {
         return m_tail->data;
     }
 
+    // prints data from head to tail
+    // 1 2 3 then 4
     void print_forward() {
 
         Node_t* current = m_head;
@@ -138,16 +140,18 @@ template <typename T> class Deque {
             current = current->next;
         }
 
-        std::cout << std::endl;
+        std::cout << '\n';
     }
 
+    // prints data form tail to head
+    // 4 3 2 then 1
     void print_backwards() {
         Node_t* current = m_tail;
         while (current) {
             std::cout << current->data << " ";
             current = current->prev;
         }
-        std::cout << std::endl;
+        std::cout << '\n';
     }
 };
 
