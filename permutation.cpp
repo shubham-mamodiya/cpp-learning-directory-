@@ -2,116 +2,77 @@
 // #include <cstddef>
 #include <string>
 
-void get_input(Deque<std::string>* container);
+void get_input(Deque<std::string>& container);
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
     using namespace std;
 
     Deque<string> container{};
-    get_input(&container);
+    get_input(container);
 
     container.print_backwards();
     return 0;
 }
 
-/*when char c is in line:
- * when c is a '-' pops form tail.
- * when c is a '~' pops from head.
- * when c is a '`'. This will push the next word at the tail until it
- * founds any instruction symbols or whitespace.
- * The default push is at the head.
- * it does not pop when container is empty.
- * */
-void get_input(Deque<std::string>* container) {
-    using namespace std;
-    string input{};
-    string temp_word{};
-    bool pop_condition{};
+/* When a character appears in the line:
+ * - '-' pops from the tail.
+ * - '~' pops from the head.
+ * - '`' pushes the next word to the tail until an instruction symbol
+ *   or whitespace is found.
+ * - The default push is at the head.
+ * - It does not pop when the container is empty.
+ */
+void get_input(Deque<std::string>& container) {
+    std::string input{};     // To get a line as input
+    std::string temp{};      // To derive words from input
+    bool push_forward{true}; // for the condition when a Backtick is given so add the next word
+    // to the tail
 
-    // because '`' pushes the next word to the tail and other symbols takes
-    // care of previous word
-    // true -> push on the head
-    // false -> push on the tail
-    bool push_forward{true};
+    std::cout << "Give some testing data: ";
+    std::getline(std::cin >> std::ws, input);
 
-    // used to decide should we append this char to the temp_word
-    bool append{true};
-
-    char white_space = ' ';
-    char backtick = '`';
-    char tilde = '~';
-    char hyphen = '-';
-    // TODO: use std::array for instructions
-
-    string instructions{white_space, backtick, tilde, hyphen};
-
-    cout << "Test input for data: \n";
-    getline(cin >> ws, input);
-    for (char character : input) {
-        // check if we have any instructions or not
-        for (char instruction : instructions) {
-            if (instruction == character) {
-                append = false;
-            }
+    auto flush_word{[&]() -> void {
+        if (temp.empty()) {
+            return;
         }
-
-        // when container is empty don't pop
-        // so, pop_condition is false or vice versa
-        pop_condition = container->is_empty() ? false : true;
-
-        if (append) {
-            temp_word += character;
-        } else {
-            // PUSHING
-            // push the previous buffer
-            // it changes the direction of push and also pushes the stored
-            // buffer to the container based on the previous direction
-            if (!temp_word.empty()) {
-                if (push_forward) {
-                    container->push_front(temp_word);
-                } else {
-                    container->push_back(temp_word);
-                }
-                // After every push set direction to default (true)
-                // it is intended this way because backtick means push
-                // the next word at the tail
-
-                temp_word.clear();
-            }
-            push_forward = (character == backtick) ? false : true;
-
-            // POPPING
-            if (character == hyphen || character == tilde) {
-
-                // pop only if container is not empty
-                if (pop_condition) {
-                    // pop form head
-                    if (character == hyphen) {
-                        container->pop_front();
-                    }
-                    // pop form tail
-                    else if (character == tilde) {
-                        container->pop_back();
-                    }
-                }
-            }
-        }
-        // means you can append character to temp_word
-        append = true;
-    }
-
-    // the above code does not try to push the last word from input to container
-    // so this code completes that
-    // TODO: remove this extra code and make above code work universally for
-    // all inputs
-
-    if (!temp_word.empty()) {
-
         if (push_forward) {
-            container->push_front(temp_word);
+            container.push_front(temp); // push on the head
         } else {
-            container->push_back(temp_word);
+            container.push_back(temp); // push on the tail
         }
-        temp_word.clear();
+        temp.clear();
+        push_forward = true; // reset to default push direction
+    }};
+
+    for (char character : input) {
+        switch (character) {
+        default:
+            temp += character;
+            break;
+
+        case ' ':
+            flush_word();
+            break;
+
+        case '`':
+            flush_word();         // previous buffer
+            push_forward = false; // next push on the tail
+            break;
+
+        case '-':
+            flush_word(); // previous buffer (Ex: 1-2, push 1 then pop)
+            if (!container.is_empty()) {
+                container.pop_front();
+            }
+            break;
+
+        case '~':
+            flush_word();
+            if (!container.is_empty()) {
+                container.pop_back();
+            }
+            break;
+        }
     }
+    flush_word(); // push the last word that happens to be left in the input
 }
