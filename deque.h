@@ -44,6 +44,64 @@ template <typename T> class Deque {
         }
     }
 
+    // iterator
+    class iterator {
+        Node_t* m_node{nullptr};
+
+      public:
+        using iterator_category = std::bidirectional_iterator_tag;
+        using value_type = T;
+        using difference_type = std::ptrdiff_t;
+        using pointer = T*;
+        using reference = T&;
+
+        iterator() = default;
+        explicit iterator(Node_t* node) : m_node{node} {}
+
+        // dereference
+        reference operator*() const {
+            return m_node->data;
+        }
+
+        pointer operator->() const {
+            return &m_node->data;
+        }
+
+        // ++it
+        iterator& operator++() {
+            m_node = m_node->next;
+            return *this;
+        }
+
+        iterator operator++(int) {
+            iterator temp{*this};
+            ++(*this);
+            return temp;
+        }
+
+        // it--
+        iterator operator--(int) {
+            iterator temp{*this};
+            --(*this);
+            return temp;
+        }
+
+        friend bool operator==(const iterator& lhs, const iterator& rhs) {
+            return lhs.m_node == rhs.m_node;
+        }
+
+        friend bool operator!=(const iterator& lhs, const iterator& rhs) {
+            return !(lhs == rhs);
+        }
+    };
+
+    iterator begin() {
+        return iterator{m_head};
+    }
+    iterator end() {
+        return iterator{nullptr};
+    }
+
     // TODO: move semantics
 
     bool is_empty() const {
