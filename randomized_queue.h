@@ -10,26 +10,28 @@
 
 template <typename T> class RandomizedQueue {
   private:
-    struct Node_t {
+    struct Node {
         T value{};
-        Node_t* next{nullptr};
+        Node* next{nullptr};
 
-        Node_t() = default;
+        Node() = default;
 
-        explicit Node_t(const T& other_value, Node_t* other_next)
+        explicit Node(const T& other_value, Node* other_next)
             : value{other_value}, next{other_next} {}
     };
 
-    Node_t* m_tail{};
-    Node_t* m_head{};
+    Node* m_tail{};
+    Node* m_head{};
     std::size_t m_size{};
 
   public:
     RandomizedQueue() = default;
 
     ~RandomizedQueue() {
-        while (!empty()) {
-            dequeue();
+        while (m_head) {
+            Node* temp = m_head;
+            m_head = m_head->next;
+            delete temp;
         }
     }
 
@@ -38,6 +40,7 @@ template <typename T> class RandomizedQueue {
     RandomizedQueue(RandomizedQueue&&) = delete;
     RandomizedQueue& operator=(const RandomizedQueue&) = delete;
     RandomizedQueue& operator=(RandomizedQueue&&) = delete;
+
     bool empty() const noexcept {
         return m_size == 0;
     }
@@ -48,7 +51,7 @@ template <typename T> class RandomizedQueue {
 
     void enqueue(const T& item) {
 
-        Node_t* new_node = new Node_t(item, nullptr);
+        Node* new_node = new Node(item, nullptr);
 
         if (empty()) {
             m_tail = m_head = new_node;
@@ -84,7 +87,7 @@ template <typename T> class RandomizedQueue {
             throw std::logic_error("The container is empty!.");
         }
 
-        Node_t* current = m_head;
+        Node* current = m_head;
         auto random_num = Random::get<std::size_t>(0, m_size - 1);
 
         for (std::size_t index = 0; index < random_num; ++index) {
