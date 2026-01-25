@@ -28,13 +28,11 @@ template <typename T> class Sorts {
         m_data.resize(static_cast<std::size_t>(size));
     }
 
-    bool empty() const noexcept {
-        return m_data.empty();
-    }
+    bool empty() const noexcept { return m_data.empty(); }
 
     void initialize_randomly() {
         for (std::size_t index{}; index < m_data.size(); ++index) {
-            m_data[index] = Random::get(0, 0x10000);
+            m_data[index] = Random::random<T>();
         }
     }
 
@@ -52,7 +50,7 @@ template <typename T> class Sorts {
         std::size_t first_index{0};
         for (std::size_t i{}; i < m_data.size(); ++i) {
 
-            std::size_t random_num = Random::get(first_index, i + 1);
+            std::size_t random_num = Random::get(first_index, i);
             std::swap(m_data[i], m_data[random_num]);
         }
     }
@@ -73,11 +71,13 @@ template <typename T> class Sorts {
     }
 
     void insertion_sort() {
-        long long size{static_cast<long long>(m_data.size())};
-        for (long long i_index{}; i_index < size; ++i_index) {
-            for (long long j_index{i_index - 1}; j_index > 0; --j_index) {
-                if (m_data[j_index] > m_data[i_index]) {
-                    std::swap(m_data[j_index], m_data[i_index]);
+        std::size_t size{m_data.size()};
+        for (std::size_t i{}; i < size; ++i) {
+            for (long long j{static_cast<long long>(i)}; j > 0; --j) {
+                if (less(m_data[j - 1], m_data[j])) {
+                    std::swap(m_data[j - 1], m_data[j]);
+                } else {
+                    break;
                 }
             }
         }
@@ -113,8 +113,6 @@ template <typename T> class Sorts {
             return 0;
         }
     }
-    bool less(const T& lhs, const T& rhs) {
-        return (compare_to(lhs, rhs) < 0);
-    }
+    bool less(const T& lhs, const T& rhs) { return (compare_to(lhs, rhs) < 0); }
 };
 #endif // !ELEMENTARY_SORTS_H
