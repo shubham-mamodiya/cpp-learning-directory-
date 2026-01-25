@@ -10,10 +10,15 @@ int main() {
     // data.print();
 
     Sorts<int> data_2{};
-    data_2.resize(5);
+    data_2.resize(10);
     // data_2.print();
 
-    data_2.initialize_consistent();
-    data_2.shuffle();
+    data_2.initialize_randomly();
+    // data_2.print();
+
+    std::cout << "\n=======================";
+    // data_2.selection_sort();
+    // data_2.insertion_sort();
+    data_2.shell_sort();
     data_2.print();
 }
