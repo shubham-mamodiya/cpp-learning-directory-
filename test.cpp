@@ -16,17 +16,28 @@ int main() {
     // Sorts<float> data{};
     // Sorts<double> data{};
     // Sorts<std::size_t> data{};
-    data.resize(10);
+    data.resize(5);
     // data_2.print();
 
-    // data.initialize_consistent();
-    data.initialize_randomly();
-    // data.shuffle();
-    // data_2.print();
+    data.initialize_consistent();
+    // data.initialize_randomly();
+    data.shuffle();
+    data.selection_sort();
+    data.is_sorted();
 
-    std::cout << "\n=======================";
-    // data.selection_sort();
+    data.shuffle();
     data.insertion_sort();
+    data.is_sorted();
+
+    data.shuffle();
+    data.shell_sort();
+    data.is_sorted();
+    // data_2.print();
+
+    // std::cout << "\n=======================";
+    // data.selection_sort();
+    // data.insertion_sort();
     // data.shell_sort();
-    data.print();
+    // data.print();
+    // data.is_sorted();
 }

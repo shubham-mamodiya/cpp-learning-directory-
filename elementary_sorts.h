@@ -1,4 +1,8 @@
+/*NOTE: please don't use this file. Because there are 1 or 2 bugs
+ * in it and I did not fix them as it was just for learning the algorithms
+ * not to make a useable library*/
 #ifndef ELEMENTARY_SORTS_H
+
 #define ELEMENTARY_SORTS_H
 
 #include "random_mt.h"
@@ -43,7 +47,7 @@ template <typename T> class Sorts {
     }
 
     void shuffle() {
-        // TODO: implement knuth shuffle
+
         if (empty()) {
             return;
         }
@@ -61,12 +65,18 @@ template <typename T> class Sorts {
     }
 
     void selection_sort() {
-        for (std::size_t index{}; index < m_data.size(); ++index) {
-            for (std::size_t j_index{}; j_index < m_data.size(); ++j_index) {
-                if (m_data[j_index] > m_data[index]) {
-                    std::swap(m_data[j_index], m_data[index]);
+        if (empty()) {
+            return;
+        }
+        std::size_t smallest{};
+        for (std::size_t i{}; i < m_data.size(); ++i) {
+            smallest = i;
+            for (std::size_t j{i}; j < m_data.size(); ++j) {
+                if (less(m_data[smallest], m_data[j])) {
+                    smallest = j;
                 }
             }
+            std::swap(m_data[i], m_data[smallest]);
         }
     }
 
@@ -103,12 +113,26 @@ template <typename T> class Sorts {
         }
     }
 
+    // Empty container is always sorted
+    void is_sorted() {
+        if (m_data.size() <= 1) {
+            std::cout << "\nTrue";
+            return;
+        }
+        for (std::size_t i{1}; i < m_data.size(); ++i) {
+            if (less(m_data[i - 1], m_data[i])) {
+                std::cout << "\nFalse";
+                return;
+            }
+        }
+        std::cout << "\nTrue";
+    }
     int8_t compare_to(const T& lhs, const T& rhs) {
-        if (lhs > rhs) {
-            return -1;
-
-        } else if (lhs < rhs) {
+        if (lhs < rhs) {
             return 1;
+
+        } else if (lhs > rhs) {
+            return -1;
         } else {
             return 0;
         }
