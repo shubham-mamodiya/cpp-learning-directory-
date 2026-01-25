@@ -2,7 +2,9 @@
 #define RANDOM_MT_H
 
 #include <chrono>
+#include <limits>
 #include <random>
+#include <type_traits>
 
 // This header-only Random namespace implements a self-seeding Mersenne Twister.
 // Requires C++17 or newer.
@@ -38,9 +40,7 @@ inline std::mt19937 mt{
 
 // Generate a random int between [min, max] (inclusive)
 // * also handles cases where the two arguments have different types but can be converted to int
-inline int get(int min, int max) {
-    return std::uniform_int_distribution{min, max}(mt);
-}
+inline int get(int min, int max) { return std::uniform_int_distribution{min, max}(mt); }
 
 // The following function templates can be used to generate random numbers in other cases
 
@@ -55,9 +55,7 @@ inline int get(int min, int max) {
 // *    unsigned short, unsigned int, unsigned long, or unsigned long long
 // Sample call: Random::get(1L, 6L);             // returns long
 // Sample call: Random::get(1u, 6u);             // returns unsigned int
-template <typename T> T get(T min, T max) {
-    return std::uniform_int_distribution<T>{min, max}(mt);
-}
+template <typename T> T get(T min, T max) { return std::uniform_int_distribution<T>{min, max}(mt); }
 
 // Generate a random value between [min, max] (inclusive)
 // * min and max can have different types
@@ -69,6 +67,20 @@ template <typename T> T get(T min, T max) {
 template <typename R, typename S, typename T> R get(S min, T max) {
     return get<R>(static_cast<R>(min), static_cast<R>(max));
 }
+
+template <typename T> T random() {
+    if constexpr (std::is_integral_v<T>) {
+        return std::uniform_int_distribution<T>{std::numeric_limits<T>::min(),
+                                                std::numeric_limits<T>::max()}(mt);
+    } else {
+
+        static_assert(std::is_floating_point_v<T>, "random_any only supports arithmetic types");
+
+        // Best possible interpretation of “any float”
+        return std::generate_canonical<T, std::numeric_limits<T>::digits>(mt);
+    }
+}
+
 } // namespace Random
 
 #endif
