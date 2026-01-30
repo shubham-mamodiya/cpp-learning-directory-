@@ -10,15 +10,67 @@ template <typename T> class Sort {
                   "!Sort object only intended to work on premetive data types.");
 
   private:
+    // nothing yet remove if you want
+  public:
     vector<T> data{};
 
-    void merge() { return; }
+    vector<T> merge(int lo, int hi) {
+        int mid{(lo + hi) / 2};
+        if (!is_sorted(data, lo, mid)) {
+            return;
+        }
+
+        if (!is_sorted(data, mid + 1, hi)) {
+            return;
+        }
+        vector<T> aux(data.capacity());
+        for (int k = lo; k <= hi; k++) {
+            aux[k] = data[k];
+        }
+
+        int i = lo, j = mid + 1;
+        for (int k = lo; k <= hi; k++) {
+            if (i > mid) {
+                data[k] = aux[j++];
+            } else if (j > hi) {
+                data[k] = aux[i++];
+            } else if (less(aux[j], aux[i])) {
+                data[k] = aux[j++];
+            } else {
+                data[k] = aux[i++];
+            }
+        }
+        return data;
+    }
+    bool is_sorted(vector<T> a, int lo, int hi) {
+        if (lo < 0 || hi < 0) {
+            return false;
+        }
+        if (a.size() <= 1) {
+            std::cout << "\nTrue";
+            return true;
+        }
+        for (int i{lo}; i < hi; ++i) {
+            if (less(a[i - 1], a[i])) {
+                std::cout << "\nFalse";
+                return false;
+            }
+        }
+        std::cout << "\nTrue";
+        return true;
+    }
+
     void sort_v1() { return; }
 
   public:
+    Sort() { data.resize(10); }
+
     bool empty() const noexcept { return data.empty(); }
 
+    bool less(const T& lhs, const T& rhs) { return compare(lhs, rhs) < 0; }
+
     void merge_sort() { sort_v1(); }
+
     bool is_sorted() {
         if (data.size() <= 1) {
             std::cout << "\nTrue";
@@ -43,4 +95,14 @@ template <typename T> class Sort {
         }
     }
 };
-int main() { return 0; }
+
+int main() {
+
+    Sort<int> first_half{};
+
+    for (int i = 0; i < (first_half.data.capacity() / 2); ++i) {
+        first_half.data[i] = i;
+    }
+
+    return 0;
+}
