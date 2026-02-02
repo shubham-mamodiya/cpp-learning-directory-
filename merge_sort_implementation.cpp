@@ -1,4 +1,5 @@
 
+#include <cassert>
 #include <cstdint>
 #include <iostream>
 #include <type_traits>
@@ -12,80 +13,82 @@ template <typename T> class Sort {
   private:
     // nothing yet remove if you want
   public:
-    vector<T> data{};
+    vector<T> m_data{};
 
-    vector<T> merge(int lo, int hi) {
+    void merge(int lo, int hi) {
+        assert(lo > 0 || hi > 0 || hi < static_cast<int>(m_data.capacity()) ||
+               lo < static_cast<int>(m_data.capacity()));
+
         int mid{(lo + hi) / 2};
-        if (!is_sorted(data, lo, mid)) {
-            return;
-        }
 
-        if (!is_sorted(data, mid + 1, hi)) {
-            return;
-        }
-        vector<T> aux(data.capacity());
+        // assert(!is_sorted(m_data, lo, mid));
+        //
+        // assert(!is_sorted(m_data, mid + 1, hi));
+
+        vector<T> aux(hi - lo + 1);
         for (int k = lo; k <= hi; k++) {
-            aux[k] = data[k];
+            aux[k] = m_data[k];
         }
 
         int i = lo, j = mid + 1;
         for (int k = lo; k <= hi; k++) {
             if (i > mid) {
-                data[k] = aux[j++];
+                m_data[k] = aux[j++];
             } else if (j > hi) {
-                data[k] = aux[i++];
+                m_data[k] = aux[i++];
             } else if (less(aux[j], aux[i])) {
-                data[k] = aux[j++];
+                m_data[k] = aux[j++];
             } else {
-                data[k] = aux[i++];
+                m_data[k] = aux[i++];
             }
         }
-        return data;
     }
+
     bool is_sorted(vector<T> a, int lo, int hi) {
-        if (lo < 0 || hi < 0) {
-            return false;
-        }
+        assert(!(lo < 0 || hi < 0));
         if (a.size() <= 1) {
-            std::cout << "\nTrue";
             return true;
         }
         for (int i{lo}; i < hi; ++i) {
-            if (less(a[i - 1], a[i])) {
-                std::cout << "\nFalse";
+            if (less(a[i + 1], a[i])) {
                 return false;
             }
         }
-        std::cout << "\nTrue";
         return true;
     }
 
     void sort_v1() { return; }
 
   public:
-    Sort() { data.resize(10); }
+    Sort() = default;
 
-    bool empty() const noexcept { return data.empty(); }
+    std::size_t size() const noexcept { return m_data.size; }
+
+    bool empty() const noexcept { return m_data.empty(); }
 
     bool less(const T& lhs, const T& rhs) { return compare(lhs, rhs) < 0; }
 
-    void merge_sort() { sort_v1(); }
+    // void merge_sort() { sort_v1(); }
+
+    void resize(int size) {
+        assert(size >= 0);
+        m_data.resize(static_cast<std::size_t>(size));
+    }
 
     bool is_sorted() {
-        if (data.size() <= 1) {
-            std::cout << "\nTrue";
+        if (m_data.size() <= 1) {
             return true;
         }
-        for (std::size_t i{1}; i < data.size(); ++i) {
-            if (less(data[i - 1], data[i])) {
-                std::cout << "\nFalse";
+        for (std::size_t i{1}; i < m_data.size(); ++i) {
+            if (less(m_data[i - 1], m_data[i])) {
                 return false;
             }
         }
-        std::cout << "\nTrue";
+
         return true;
     }
-    int8_t compare(const T& lhs, const T& rhs) {
+
+    int compare(const T& lhs, const T& rhs) {
         if (lhs < rhs) {
             return -1;
         } else if (lhs > rhs) {
@@ -99,10 +102,11 @@ template <typename T> class Sort {
 int main() {
 
     Sort<int> first_half{};
-
-    for (int i = 0; i < (first_half.data.capacity() / 2); ++i) {
-        first_half.data[i] = i;
+    first_half.resize(5);
+    first_half.m_data = {1, 6, 2, 3, 5};
+    first_half.merge(0, 4);
+    for (int i{}; i < static_cast<int>(first_half.m_data.size()); ++i) {
+        cout << "\n" << first_half.m_data[i];
     }
-
     return 0;
 }
