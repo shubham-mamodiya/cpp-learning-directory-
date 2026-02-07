@@ -13,6 +13,7 @@ template <typename T> class Sort {
   private:
     std::vector<T> m_data{};
     std::vector<T> aux{};
+    const int CUTOFF{7};
 
     void merge(int lo, int mid, int hi) {
         if (lo >= 0 && hi < static_cast<int>(m_data.size()) && lo <= hi) {
@@ -63,11 +64,24 @@ template <typename T> class Sort {
         }
     }
 
+    void insertion_sort(int lo, int hi) {
+        int smallest{};
+        for (int i{lo}; i <= hi; ++i) {
+            smallest = i;
+            for (int j{i}; j <= hi; ++j) {
+                if (less(m_data[j], m_data[i])) {
+                    smallest = j;
+                }
+            }
+            std::swap(m_data[i], m_data[smallest]);
+        }
+    }
     void sort(int lo, int hi) {
 
-        if (hi <= lo) {
+        if (hi <= lo + CUTOFF - 1) {
+            insertion_sort(lo, hi);
             return;
-        };
+        }
 
         int mid{lo + (hi - lo) / 2};
         sort(lo, mid);
@@ -116,7 +130,7 @@ template <typename T> class Sort {
 };
 
 int main() {
-    std::size_t size{10000000};
+    std::size_t size{10};
     std::vector<int> unsorted_data(size);
     for (std::size_t i{}; i < size; ++i) {
         unsorted_data[i] = Random::get(0, size);
