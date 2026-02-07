@@ -7,12 +7,11 @@
 #include <vector>
 
 template <typename T> class Sort {
-    static_assert(std::is_arithmetic_v<T>,
-                  "!Sort object only intended to work on premetive data types.");
+    static_assert(std::is_arithmetic_v<T>, "!Sort only works with primitive data types.");
 
   private:
     std::vector<T> data{};
-    std::vector<T> aux{};
+    std::vector<T> buffer{};
 
     static constexpr std::size_t cutoff{7};
 
@@ -22,18 +21,18 @@ template <typename T> class Sort {
         int i = lo, j = mid + 1;
         for (int k = lo; k <= hi; k++) {
             if (i > mid) {
-                aux[k] = data[j++];
+                buffer[k] = data[j++];
             } else if (j > hi) {
-                aux[k] = data[i++];
-            } else if (less(data[j], data[i])) {
-                aux[k] = data[j++];
+                buffer[k] = data[i++];
+            } else if (less_than(data[j], data[i])) {
+                buffer[k] = data[j++];
             } else {
-                aux[k] = data[i++];
+                buffer[k] = data[i++];
             }
         }
 
         for (int i = lo; i <= hi; ++i) {
-            data[i] = aux[i];
+            data[i] = buffer[i];
         }
     }
 
@@ -43,14 +42,14 @@ template <typename T> class Sort {
             return true;
         }
         for (int i{lo}; i < hi; ++i) {
-            if (less(a[i + 1], a[i])) {
+            if (less_than(a[i + 1], a[i])) {
                 return false;
             }
         }
         return true;
     }
 
-    bool less(const T& lhs, const T& rhs) { return compare(lhs, rhs) < 0; }
+    bool less_than(const T& lhs, const T& rhs) { return compare(lhs, rhs) < 0; }
 
     int compare(const T& lhs, const T& rhs) {
         if (lhs < rhs) {
@@ -67,7 +66,7 @@ template <typename T> class Sort {
         for (int i{lo}; i <= hi; ++i) {
             smallest = i;
             for (int j{i}; j <= hi; ++j) {
-                if (less(data[j], data[smallest])) {
+                if (less_than(data[j], data[smallest])) {
                     smallest = j;
                 }
             }
@@ -91,7 +90,7 @@ template <typename T> class Sort {
   public:
     Sort() = default;
 
-    Sort(std::vector<T>& other) : data{other}, aux(other.size()) {}
+    Sort(std::vector<T>& other) : data{other}, buffer(other.size()) {}
 
     std::size_t size() const noexcept { return data.size(); }
 
@@ -106,7 +105,7 @@ template <typename T> class Sort {
     void resize(int size) {
         assert(size >= 0);
         data.resize(static_cast<std::size_t>(size));
-        aux.resize(static_cast<std::size_t>(size));
+        buffer.resize(static_cast<std::size_t>(size));
     }
 
     bool is_sorted() {
@@ -114,7 +113,7 @@ template <typename T> class Sort {
             return true;
         }
         for (std::size_t i{1}; i < data.size(); ++i) {
-            if (less(data[i], data[i - 1])) {
+            if (less_than(data[i], data[i - 1])) {
                 return false;
             }
         }
