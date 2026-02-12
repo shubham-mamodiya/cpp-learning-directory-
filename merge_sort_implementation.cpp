@@ -13,7 +13,7 @@ template <typename T> class Sort {
     std::vector<T> data{};
     std::vector<T> buffer{};
 
-    static constexpr std::size_t cutoff{7};
+    static constexpr int CUTOFF{7};
 
     void merge(int lo, int mid, int hi) {
         assert(lo >= 0 && hi < static_cast<int>(data.size()) && lo <= hi);
