@@ -1,4 +1,5 @@
 #pragma once
+#include <cmath>
 #include <iostream>
 
 class Point_2d {
@@ -10,17 +11,17 @@ class Point_2d {
 
     Point_2d(const double& x, const double& y) : m_x{x}, m_y{y} {}
 
-    Point_2d(const Point_2d& that) {
-        this->m_x = that.m_x;
-        this->m_y = that.m_y;
-    }
-
-    Point_2d& operator=(const Point_2d& that) {
-        this->m_x = that.m_x;
-        this->m_y = that.m_y;
-        return *this;
-    }
-
+    // Point_2d(const Point_2d& that) {
+    //     this->m_x = that.m_x;
+    //     this->m_y = that.m_y;
+    // }
+    //
+    // Point_2d& operator=(const Point_2d& that) {
+    //     this->m_x = that.m_x;
+    //     this->m_y = that.m_y;
+    //     return *this;
+    // }
+    //
     friend Point_2d operator+(const Point_2d& p1, const Point_2d& p2) {
         return Point_2d{p1.m_x + p2.m_x, p1.m_y + p2.m_y};
     }
@@ -30,11 +31,17 @@ class Point_2d {
     }
 
     friend bool operator==(const Point_2d& p1, const Point_2d& p2) {
-        return p1.m_x == p2.m_x && p1.m_y == p2.m_y;
+        return relative_comparision(p1.m_x, p2.m_x) && nearly_equal(p1.m_y, p2.m_y);
     }
 
-    friend bool operator!=(const Point_2d& p1, const Point_2d& p2) {
-        return p1.m_x != p2.m_x || p1.m_y != p2.m_y;
+    friend bool operator!=(const Point_2d& p1, const Point_2d& p2) { return !(p1 == p2); }
+
+    static bool nearly_equal(double a, double b, double epsilon = 1e-9) {
+        return std::abs(a - b) < epsilon;
+    }
+
+    static bool relative_comparision(double a, double b, double epsilon = 1e-9) {
+        return std::abs(a - b) <= epsilon * std::max(std::abs(a), std::abs(b));
     }
 };
 
