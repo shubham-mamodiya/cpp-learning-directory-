@@ -1,0 +1,10 @@
+# Text file demo
+name,age,height_m
+Ada,36,1.65
+Bjarne,73,1.78
+
+Alignment demo:
+item           count
+apple             12
+banana             3
+# Appended line
